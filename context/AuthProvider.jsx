@@ -24,34 +24,30 @@ export const AuthProvider = ({ children }) => {
   const loginUser = async (email, password) => {
     console.log("Input Info:", email, password);
 
-    AuthenticationService.login(email, password)
-      .then(() => {
-        console.log("Login successful");
-        setLogin(true);
-      })
-      .catch((error) => {
-        console.error("Login failed:", error);
-        throw new Error("Login failed");
-      });
+    try {
+      AuthenticationService.login(email, password);
+      setLogin(true);
+    } catch (error) {
+      console.error("Login failed:", error);
+      throw error;
+    }
   };
   const logoutUser = async () => {
     LocalPreferences.storeData("isLoggedIn", false);
     setLogin(false);
   };
   const signupUser = async (email, password) => {
-    AuthenticationService.signUp({
-      username: email,
-      firstName: "FirstName",
-      lastName: "LastName",
-      password: password
-    })
-      .then(() => {
-        console.log("Sign-up successful");
-      })
-      .catch((error) => {
-        console.error("Sign-up failed:", error);
-        throw new Error("Sign-up failed");
+    try {
+      AuthenticationService.signUp({
+        username: email,
+        firstName: "FirstName",
+        lastName: "LastName",
+        password: password
       });
+    } catch (error) {
+      console.error("Signup failed:", error);
+      throw error;
+    }
   };
 
   return (

@@ -9,7 +9,7 @@ export function Login(navigation) {
 
   const { loginUser } = useContext(AppContext);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     // Validate the form fields
     if (!email.trim()) {
       Alert.alert("Validation Error", "Email cannot be empty.");
@@ -19,9 +19,12 @@ export function Login(navigation) {
       Alert.alert("Validation Error", "Password cannot be empty.");
       return;
     }
-    loginUser(email, password).catch(() => {
-      Alert.alert("Login Error", "Invalid credentials");
-    });
+    try {
+      await loginUser(email, password);
+      console.log("Login successful");
+    } catch (error) {
+      Alert.alert("Login Error", error.message);
+    }
   };
 
   return (
