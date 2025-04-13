@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".", // Root of the project
+        "paths": {
+            "components/*": ["components/*"],
+            "utils/*": ["utils/*"],
+            "context/*": ["context/*"]
+        }
+    }
+}
