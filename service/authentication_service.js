@@ -1,8 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const BASE_URL = "https://authuserver.openlab.uninorte.edu.co";
-const APP_NAME = "clase202510";
-const CONTRACT_KEY = "65aef754-1bcf-4311-8a0a-b004b006cc92";
+const APP_NAME = "proyectoReact202510";
+const CONTRACT_KEY = "a3e34163-c663-4ea8-a2fc-e1789fa1fc9b";
 
 const AuthenticationService = {
   /**

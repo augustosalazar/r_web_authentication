@@ -6,8 +6,41 @@ import { Login } from "./auth/Login";
 import { Signup } from "./auth/Signup";
 import { Home } from "./content/Home";
 import { AppContext } from "../context/AuthProvider"; // Import the context
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import MainPage from "./content/MainPage";
+import Profile from "./content/Profile";
 
 const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+
+function ContentTabs() {
+  return (
+    <SafeAreaProvider>
+      <Tab.Navigator screenOptions={{ headerShown: false }}>
+        <Tab.Screen
+          name="Home"
+          component={MainPage}
+          options={{
+            tabBarIcon: ({ color }) => (
+              <Ionicons name="home" size={24} color={color} />
+            )
+          }}
+        />
+        <Tab.Screen
+          name="Profile"
+          component={Profile}
+          options={{
+            tabBarIcon: ({ color }) => (
+              <Ionicons name="person" size={24} color={color} />
+            )
+          }}
+        />
+      </Tab.Navigator>
+    </SafeAreaProvider>
+  );
+}
 
 const AuthFlow = () => {
   const { login } = useContext(AppContext); // Use the login state from AuthProvider
@@ -25,11 +58,7 @@ const AuthFlow = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {login ? (
-        <Stack.Screen
-          name="Home"
-          component={Home}
-          options={{ headerShown: true, title: "Home" }}
-        />
+        <Stack.Screen name="App" component={ContentTabs} />
       ) : (
         <>
           <Stack.Screen name="Login" component={Login} />
