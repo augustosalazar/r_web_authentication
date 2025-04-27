@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  ActivityIndicator,
+  StyleSheet
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ProductService from "../../service/product_service";
+import { FAB, Button } from "react-native-paper";
 
 export default function MainPage({ navigation }) {
   const [products, setProducts] = useState([]);
@@ -30,7 +37,7 @@ export default function MainPage({ navigation }) {
       style={{
         padding: 12,
         marginVertical: 4,
-        marginHorizontal: 8,
+        marginHorizontal: 12,
         backgroundColor: "#fff",
         borderRadius: 6
         // add shadow if you like...
@@ -45,15 +52,13 @@ export default function MainPage({ navigation }) {
       {/* Description */}
       <Text style={{ marginTop: 2, color: "#666" }}>{item.description}</Text>
 
-      {/* Example: navigate on press */}
-      {/* 
-      <Button 
+      <Button
+        mode="contained-tonal"
         onPress={() => navigation.navigate("Detail", { product: item })}
-        style={{ marginTop: 8 }}
+        style={styles.optionButton}
       >
-        View Details
-      </Button> 
-      */}
+        Edit
+      </Button>
     </View>
   );
 
@@ -80,14 +85,31 @@ export default function MainPage({ navigation }) {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Main Page</Text>
+      <View style={{ flex: 1 }}>
+        <Text style={{ fontSize: 20, fontWeight: "bold", textAlign: "center" }}>
+          Products
+        </Text>
         <FlatList
+          style={{ marginTop: 16 }}
           data={products}
           renderItem={renderItem}
           keyExtractor={(item) => item.id.toString()}
         />
       </View>
+      <FAB
+        style={styles.fab}
+        icon="plus"
+        onPress={() => navigation.navigate("Detail")}
+      />
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  fab: {
+    position: "absolute",
+    bottom: 16,
+    right: 16,
+    backgroundColor: "#6200ee"
+  }
+});

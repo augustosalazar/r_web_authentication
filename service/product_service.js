@@ -47,25 +47,36 @@ const ProductService = {
    */
   async addProduct(product) {
     const url = `${BASE_URL}/${CONTRACT_KEY}/data/store`;
+
     try {
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=UTF-8" },
         body: JSON.stringify({
           table_name: TABLE,
-          data: product // or product.toJson()
+          data: product
         })
       });
+
       if (res.status === 201) {
-        return true;
+        // Parse the returned JSON
+        const decoded = await res.json();
+        const record = decoded.data; // { entry_id, data: { … } }
+        const { entry_id, data: fields } = record;
+
+        // Flatten into { id, …fields }
+        const newProduct = { id: entry_id, ...fields };
+        console.log("addProduct →", newProduct);
+
+        return newProduct;
       } else {
         const text = await res.text();
         console.error(`addProduct failed ${res.status}:`, text);
-        return false;
+        return null;
       }
     } catch (err) {
       console.error("addProduct error:", err);
-      return false;
+      return null;
     }
   },
 
@@ -76,13 +87,16 @@ const ProductService = {
    */
   async updateProduct(product) {
     if (!product.id) throw new Error("product.id is required");
-    const url = `${BASE_URL}/${CONTRACT_KEY}/data/${TABLE}/update/${product.id}`;
+    const { id, ...fields } = product;
+    const url = `${BASE_URL}/${CONTRACT_KEY}/data/${TABLE}/update/${id}`;
+
     try {
       const res = await fetch(url, {
         method: "PUT",
         headers: { "Content-Type": "application/json; charset=UTF-8" },
-        body: JSON.stringify({ data: product /* or product.toJsonNoId() */ })
+        body: JSON.stringify({ data: fields })
       });
+
       console.log(`updateProduct status ${res.status}`);
       if (res.status === 200) {
         return true;
@@ -99,17 +113,20 @@ const ProductService = {
 
   /**
    * Deletes a product by id.
-   * @param {Object} product – must include an `id` field
-   * @returns {Promise<boolean>} true on 200
+   * @param {{ id: string } | string} productOrId
+   * @returns {Promise<boolean>}
    */
-  async deleteProduct(product) {
-    if (!product.id) throw new Error("product.id is required");
-    const url = `${BASE_URL}/${CONTRACT_KEY}/data/${TABLE}/delete/${product.id}`;
+  async deleteProduct(productOrId) {
+    const id = typeof productOrId === "string" ? productOrId : productOrId.id;
+    if (!id) throw new Error("product.id is required");
+    const url = `${BASE_URL}/${CONTRACT_KEY}/data/${TABLE}/delete/${id}`;
+
     try {
       const res = await fetch(url, {
         method: "DELETE",
         headers: { "Content-Type": "application/json; charset=UTF-8" }
       });
+
       console.log(`deleteProduct status ${res.status}`);
       if (res.status === 200) {
         return true;
@@ -126,14 +143,15 @@ const ProductService = {
 
   /**
    * Deletes *all* products by fetching them and deleting one by one.
-   * @returns {Promise<boolean>} always resolves to true
+   * @returns {Promise<boolean>}
    */
   async deleteProducts() {
     try {
       const all = await this.getProducts();
       for (const p of all) {
-        /* eslint-disable no-await-in-loop */
-        await this.deleteProduct(p);
+        // now accepts either p or p.id
+        // eslint-disable-next-line no-await-in-loop
+        await this.deleteProduct(p.id);
       }
       return true;
     } catch (err) {
