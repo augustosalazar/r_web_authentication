@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -10,39 +10,58 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { FAB, Button } from "react-native-paper";
 import { ProductContext } from "../../context/ProductProvider";
 import { useContext } from "react";
+import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 
 export default function MainPage({ navigation }) {
-  const { refreshProducts, loading, products, error } =
+  const { refreshProducts, deleteProduct, loading, products, error } =
     useContext(ProductContext);
 
   useEffect(() => {
     refreshProducts();
   }, []);
 
+  const renderRightActions = () => (
+    <View style={styles.rightAction}>
+      <Text style={styles.deleteText}>Eliminar</Text>
+    </View>
+  );
+
   const renderItem = ({ item }) => (
-    <View
-      style={{
-        padding: 12,
-        marginVertical: 4,
-        marginHorizontal: 12,
-        backgroundColor: "#fff",
-        borderRadius: 6
+    <Swipeable
+      friction={2}
+      overshootRight={false}
+      renderRightActions={renderRightActions}
+      rightThreshold={80}
+      onSwipeableOpen={(direction) => {
+        if (direction === "right") {
+          deleteProduct(item.id);
+        }
       }}
     >
-      <Text style={{ fontSize: 16, fontWeight: "bold" }}>{item.name}</Text>
-
-      <Text style={{ marginTop: 4 }}>Quantity: {item.quantity}</Text>
-
-      <Text style={{ marginTop: 2, color: "#666" }}>{item.description}</Text>
-
-      <Button
-        mode="contained-tonal"
-        onPress={() => navigation.navigate("Detail", { product: item })}
-        style={styles.optionButton}
+      <View
+        style={{
+          padding: 12,
+          marginVertical: 4,
+          marginHorizontal: 12,
+          backgroundColor: "#fff",
+          borderRadius: 6
+        }}
       >
-        Edit
-      </Button>
-    </View>
+        <Text style={{ fontSize: 16, fontWeight: "bold" }}>{item.name}</Text>
+
+        <Text style={{ marginTop: 4 }}>Quantity: {item.quantity}</Text>
+
+        <Text style={{ marginTop: 2, color: "#666" }}>{item.description}</Text>
+
+        <Button
+          mode="contained-tonal"
+          onPress={() => navigation.navigate("Detail", { product: item })}
+          style={styles.optionButton}
+        >
+          Edit
+        </Button>
+      </View>
+    </Swipeable>
   );
 
   if (loading) {
@@ -82,6 +101,7 @@ export default function MainPage({ navigation }) {
       <FAB
         style={styles.fab}
         icon="plus"
+        color="white"
         onPress={() => navigation.navigate("Detail")}
       />
     </SafeAreaView>
@@ -94,5 +114,18 @@ const styles = StyleSheet.create({
     bottom: 16,
     right: 16,
     backgroundColor: "#6200ee"
+  },
+  rightAction: {
+    width: 80, // must match rightThreshold
+    backgroundColor: "red",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 5,
+    marginVertical: 8,
+    marginHorizontal: 16
+  },
+  deleteText: {
+    color: "white",
+    fontWeight: "bold"
   }
 });

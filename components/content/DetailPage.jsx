@@ -2,8 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { TextInput, Button, Appbar, Text } from "react-native-paper";
-import ProductService from "../../service/product_service";
+import { TextInput, Button } from "react-native-paper";
 import { ProductContext } from "../../context/ProductProvider";
 import { useContext } from "react";
 

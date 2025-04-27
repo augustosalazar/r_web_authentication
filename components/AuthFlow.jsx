@@ -11,7 +11,6 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import MainPage from "./content/MainPage";
 import Profile from "./content/Profile";
 import DetailPage from "./content/DetailPage";
-import { ProductContext } from "../context/ProductProvider";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
