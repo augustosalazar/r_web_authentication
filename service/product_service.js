@@ -15,16 +15,25 @@ const ProductService = {
   async getProducts() {
     const url = `${BASE_URL}/${CONTRACT_KEY}/data/${TABLE}/all?format=json`;
     try {
-      const res = await fetch(url);
-      if (res.status !== 200) {
-        throw new Error(`Error code ${res.status}`);
+      const response = await fetch(url, { method: "GET" });
+      if (response.status !== 200) {
+        throw new Error(`Error code ${response.status}`);
       }
-      const json = await res.json();
-      const data = json.data || [];
-      console.log("getProducts data:", data);
-      // If you have a JS Product class with fromJson:
-      // return data.map(item => Product.fromJson(item));
-      return data;
+
+      const decoded = await response.json();
+      const rawData = decoded.data || [];
+
+      // Flatten each record into { id, ...fields }
+      const products = rawData.map((record) => {
+        const { entry_id, data } = record;
+        return {
+          id: entry_id, // top‐level entry_id becomes your id
+          ...data // spread in name, quantity, description, etc.
+        };
+      });
+
+      console.log("getProducts →", products);
+      return products;
     } catch (err) {
       console.error("getProducts error:", err);
       throw err;

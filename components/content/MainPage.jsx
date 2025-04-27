@@ -36,14 +36,23 @@ export default function MainPage({ navigation }) {
         // add shadow if you like...
       }}
     >
-      <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-        {item.name /* or item.productName */}
-      </Text>
-      <Text>Price: {item.price /* or whatever */}</Text>
-      {/* onPress navigation example:
-          <Button onPress={() => navigation.navigate('Detail', { product: item })}>
-            View
-          </Button>
+      {/* Product name */}
+      <Text style={{ fontSize: 16, fontWeight: "bold" }}>{item.name}</Text>
+
+      {/* Quantity */}
+      <Text style={{ marginTop: 4 }}>Quantity: {item.quantity}</Text>
+
+      {/* Description */}
+      <Text style={{ marginTop: 2, color: "#666" }}>{item.description}</Text>
+
+      {/* Example: navigate on press */}
+      {/* 
+      <Button 
+        onPress={() => navigation.navigate("Detail", { product: item })}
+        style={{ marginTop: 8 }}
+      >
+        View Details
+      </Button> 
       */}
     </View>
   );
@@ -77,12 +86,6 @@ export default function MainPage({ navigation }) {
           data={products}
           renderItem={renderItem}
           keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={{ paddingVertical: 8 }}
-          ListEmptyComponent={
-            <View style={{ alignItems: "center", marginTop: 20 }}>
-              <Text>No products found.</Text>
-            </View>
-          }
         />
       </View>
     </SafeAreaView>
