@@ -32,7 +32,7 @@ const ProductService = {
         };
       });
 
-      console.log("getProducts →", products);
+      console.log("ProductService getProducts ok");
       return products;
     } catch (err) {
       console.error("getProducts error:", err);
@@ -58,17 +58,14 @@ const ProductService = {
         })
       });
 
-      if (res.status === 201) {
+      if (res.status === 200) {
         // Parse the returned JSON
-        const decoded = await res.json();
-        const record = decoded.data; // { entry_id, data: { … } }
-        const { entry_id, data: fields } = record;
-
-        // Flatten into { id, …fields }
-        const newProduct = { id: entry_id, ...fields };
-        console.log("addProduct →", newProduct);
-
-        return newProduct;
+        // const decoded = await res.json();
+        // const record = decoded.data; // { entry_id, data: { … } }
+        // const { entry_id, data: fields } = record;
+        // // Flatten into { id, …fields }
+        // const newProduct = { id: entry_id, ...fields };
+        //console.log("addProduct →", newProduct);
       } else {
         const text = await res.text();
         console.error(`addProduct failed ${res.status}:`, text);
@@ -87,7 +84,9 @@ const ProductService = {
    */
   async updateProduct(product) {
     if (!product.id) throw new Error("product.id is required");
+    console.log("updateProduct", product);
     const { id, ...fields } = product;
+    console.log("updateProduct id ", id, "fields", fields);
     const url = `${BASE_URL}/${CONTRACT_KEY}/data/${TABLE}/update/${id}`;
 
     try {

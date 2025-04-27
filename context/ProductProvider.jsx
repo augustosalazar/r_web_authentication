@@ -5,6 +5,7 @@ import ProductService from "../service/product_service";
 export const ProductContext = createContext({
   products: [],
   loading: false,
+  error: null,
   refreshProducts: () => {},
   createProduct: async (data) => {},
   updateProduct: async (id, data) => {},
@@ -15,6 +16,7 @@ export const ProductContext = createContext({
 export const ProductProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Initial fetch
   const fetchProducts = async () => {
@@ -23,6 +25,7 @@ export const ProductProvider = ({ children }) => {
       const data = await ProductService.getProducts();
       setProducts(data);
     } catch (err) {
+      setError("Failed to fetch products.");
       console.error("Failed to fetch products:", err);
     } finally {
       setLoading(false);
@@ -37,12 +40,10 @@ export const ProductProvider = ({ children }) => {
   const createProduct = async (productData) => {
     setLoading(true);
     try {
-      const newProduct = await ProductService.addProduct(productData);
-      if (newProduct) {
-        setProducts((prev) => [...prev, newProduct]);
-        return newProduct;
-      }
+      await ProductService.addProduct(productData);
+      fetchProducts();
     } catch (err) {
+      setError("Failed to create product.");
       console.error("Create product failed:", err);
     } finally {
       setLoading(false);
@@ -51,18 +52,19 @@ export const ProductProvider = ({ children }) => {
   };
 
   // Update an existing product
-  const updateProduct = async (id, productData) => {
+  const updateProduct = async (product) => {
     setLoading(true);
     try {
-      const payload = { id, ...productData };
-      const success = await ProductService.updateProduct(payload);
-      if (success) {
-        setProducts((prev) =>
-          prev.map((p) => (p.id === id ? { id, ...productData } : p))
-        );
-        return true;
-      }
+      //const payload = { id, ...productData };
+      await ProductService.updateProduct(product);
+      await fetchProducts();
+      //   if (success) {
+      //     setProducts((prev) =>
+      //       prev.map((p) => (p.id === id ? { id, ...productData } : p))
+      //     );
+      //     return true;
     } catch (err) {
+      setError("Failed to update product.");
       console.error("Update product failed:", err);
     } finally {
       setLoading(false);
@@ -92,6 +94,7 @@ export const ProductProvider = ({ children }) => {
       value={{
         products,
         loading,
+        error,
         refreshProducts: fetchProducts,
         createProduct,
         updateProduct,

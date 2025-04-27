@@ -7,29 +7,16 @@ import {
   StyleSheet
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import ProductService from "../../service/product_service";
 import { FAB, Button } from "react-native-paper";
+import { ProductContext } from "../../context/ProductProvider";
+import { useContext } from "react";
 
 export default function MainPage({ navigation }) {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { refreshProducts, loading, products, error } =
+    useContext(ProductContext);
 
   useEffect(() => {
-    // fetch once on mount
-    const fetchProducts = async () => {
-      try {
-        const data = await ProductService.getProducts();
-        setProducts(data);
-      } catch (err) {
-        console.error("Error loading products:", err);
-        setError("Couldn’t load products");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
+    refreshProducts();
   }, []);
 
   const renderItem = ({ item }) => (
@@ -40,16 +27,12 @@ export default function MainPage({ navigation }) {
         marginHorizontal: 12,
         backgroundColor: "#fff",
         borderRadius: 6
-        // add shadow if you like...
       }}
     >
-      {/* Product name */}
       <Text style={{ fontSize: 16, fontWeight: "bold" }}>{item.name}</Text>
 
-      {/* Quantity */}
       <Text style={{ marginTop: 4 }}>Quantity: {item.quantity}</Text>
 
-      {/* Description */}
       <Text style={{ marginTop: 2, color: "#666" }}>{item.description}</Text>
 
       <Button

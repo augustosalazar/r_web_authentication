@@ -4,6 +4,8 @@ import { View, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TextInput, Button, Appbar, Text } from "react-native-paper";
 import ProductService from "../../service/product_service";
+import { ProductContext } from "../../context/ProductProvider";
+import { useContext } from "react";
 
 export default function DetailPage({ navigation, route }) {
   const product = route.params?.product;
@@ -13,8 +15,12 @@ export default function DetailPage({ navigation, route }) {
   const [quantity, setQuantity] = useState("");
   const [description, setDescription] = useState("");
 
+  const { updateProduct, createProduct } = useContext(ProductContext);
+
   useEffect(() => {
     if (isEdit) {
+      console.log("Editing product:", product);
+      console.log("Editing product with id:", product.id);
       setName(product.name);
       setQuantity(String(product.quantity));
       setDescription(product.description);
@@ -22,18 +28,25 @@ export default function DetailPage({ navigation, route }) {
   }, []);
 
   const save = async () => {
-    const payload = {
-      id: product?.id,
-      name,
-      quantity: parseInt(quantity, 10) || 0,
-      description
-    };
-
     try {
       if (isEdit) {
-        await ProductService.updateProduct(payload);
+        const payload = {
+          id: product.id,
+          name,
+          quantity: parseInt(quantity, 10) || 0,
+          description
+        };
+
+        await updateProduct(payload);
       } else {
-        await ProductService.addProduct(payload);
+        const payload = {
+          id: 0,
+          name,
+          quantity: parseInt(quantity, 10) || 0,
+          description
+        };
+
+        await createProduct(payload);
       }
       navigation.goBack();
     } catch (err) {
