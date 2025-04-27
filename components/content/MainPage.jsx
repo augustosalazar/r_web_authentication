@@ -47,19 +47,35 @@ export default function MainPage({ navigation }) {
           borderRadius: 6
         }}
       >
-        <Text style={{ fontSize: 16, fontWeight: "bold" }}>{item.name}</Text>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <View style={{ flex: 0.6 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between"
+              }}
+            >
+              <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+                {item.name}
+              </Text>
 
-        <Text style={{ marginTop: 4 }}>Quantity: {item.quantity}</Text>
+              <View>
+                <Text style={{ marginTop: 4 }}>Quantity: {item.quantity}</Text>
 
-        <Text style={{ marginTop: 2, color: "#666" }}>{item.description}</Text>
-
-        <Button
-          mode="contained-tonal"
-          onPress={() => navigation.navigate("Detail", { product: item })}
-          style={styles.optionButton}
-        >
-          Edit
-        </Button>
+                <Text style={{ marginTop: 2, color: "#666" }}>
+                  {item.description}
+                </Text>
+              </View>
+            </View>
+          </View>
+          <Button
+            mode="contained-tonal"
+            onPress={() => navigation.navigate("Detail", { product: item })}
+            style={styles.optionButton}
+          >
+            Edit
+          </Button>
+        </View>
       </View>
     </Swipeable>
   );
